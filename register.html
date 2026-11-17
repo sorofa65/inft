@@ -1,0 +1,37 @@
+<!DOCTYPE html><html lang="bn"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>INFT Season 3 – Team Registration</title>
+<link rel="stylesheet" href="assets/inft.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>.w{max-width:760px;margin:0 auto;padding:14px}.c{background:#fff;border-radius:12px;padding:14px;margin-bottom:12px}
+label{font-size:12px;font-weight:600;display:block;margin:8px 0 3px}input{width:100%;padding:9px;border:1px solid #bbb;border-radius:8px;font:inherit}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}.p{display:grid;grid-template-columns:28px 3fr 1fr 1fr 1.4fr;gap:6px;margin:4px 0}.p input{padding:7px;font-size:13px}
+button.s{width:100%;padding:13px;background:#0e4fa3;color:#fff;border:0;border-radius:10px;font:600 15px Poppins,Arial}#o{position:fixed;left:-9999px;top:0}.hp{display:none}</style>
+<div class="bar no-print"><a href="index.html">← Home</a></div><div class="w">
+<div class="c"><h2 style="margin:0">Team Registration – INFT Season 3</h2>
+<div class="g" id="fl"></div><input class="hp" id="website" tabindex="-1" autocomplete="off"></div>
+<div class="c"><b>প্লেয়ার লিস্ট</b> <small>– স্কোয়াড ১১ জন, মাঠে খেলবে ৮ জন (প্রথম ৮ জন শুরুর খেলোয়াড়)</small><div id="pl"></div></div>
+<div style="display:flex;gap:8px;margin-bottom:8px"><button class="s" style="background:#444" id="di">🖼 ছবি ডাউনলোড</button><button class="s" style="background:#444" id="dp">📄 PDF ডাউনলোড</button></div><button class="s" id="go">জমা দিন (Submit)</button><p id="msg" style="text-align:center;font-weight:600"></p></div><div id="o"></div>
+<script>
+const F=['Team Name*','Team Short Name','Team Manager Name*','Captain Name','Contact Number*','Alternate Number','Village / Area','Team Jersey Color','Coach Name','Number of Players','Total Entry Fee (৳)','Registration Date','1st Installment (৳) – paid now','2nd Installment (৳) – due date/amount','Payment Method / Trx ID'];
+const $=i=>document.getElementById(i),E=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+$('fl').innerHTML=F.map((f,i)=>`<div><label>${f}</label><input data-f="${i}"></div>`).join('');
+$('pl').innerHTML=Array.from({length:11},(_,i)=>`<div class="p"><b>${i+1}</b><input placeholder="Player name"><input placeholder="Jersey"><input placeholder="Age"><input placeholder="Position"></div>`).join('');
+$('fl').querySelector('[data-f="11"]').value=new Date().toLocaleDateString('en-GB');
+function data(){const v=[...document.querySelectorAll('[data-f]')].map(i=>i.value.trim());
+ const pl=[...document.querySelectorAll('.p')].map(r=>[...r.querySelectorAll('input')].map(i=>i.value.trim())).filter(r=>r[0]);return{v,pl}}
+function sheet(d){return `<div class="a4" style="margin:0"><div class="hd"><img src="assets/logo_bw.png"><div><h1>INFT</h1><p>Imambari Night Football Tournament 2026</p><p>S E A S O N 3</p></div></div>
+<div class="tt">TEAM REGISTRATION FORM</div><div class="f">${F.map((f,i)=>`<span>${f.replace('*','')}: ${E(d.v[i])}</span>`).join('')}</div>
+<table><tr><th>Sl</th><th>Player Name</th><th>Jersey No</th><th>Age</th><th>Position</th><th>Signature</th></tr>${Array.from({length:11},(_,i)=>{const p=d.pl[i]||['','','',''];return`<tr><td>${i<8?i+1:(i+1)+' (S)'}</td><td>${E(p[0])}</td><td>${E(p[1])}</td><td>${E(p[2])}</td><td>${E(p[3])}</td><td></td></tr>`}).join('')}</table>
+<p style="font-size:10.5px;margin:4px 0"><b>Squad: 11 players · Playing: 8 (mini ground) · (S) = Substitute</b></p><p style="font-size:11px">I confirm that all information provided is correct and the team agrees to follow the tournament rules and regulations.</p>
+<div style="display:flex;gap:30px;margin-top:26px;font-size:11px;font-weight:600"><div style="flex:1;border-top:1.5px solid #000;text-align:center">Manager Signature</div><div style="flex:1;border-top:1.5px solid #000;text-align:center">Captain Signature</div><div style="flex:1;border-top:1.5px solid #000;text-align:center">Authority Signature</div></div></div>`}
+async function cap(d){$('o').innerHTML=sheet(d);const img=$('o').querySelector('img');await new Promise(r=>img.complete?r():img.onload=r);
+ const cv=await html2canvas($('o').firstChild,{scale:2,backgroundColor:'#fff'}),jpg=cv.toDataURL('image/jpeg',.88),pdf=new jspdf.jsPDF('p','mm','a4');pdf.addImage(jpg,'JPEG',0,0,210,297);return{jpg,pdf}}
+function ok(d){if(!d.v[0]||!d.v[2]||!d.v[4]||!d.pl.length){$('msg').textContent='Team name, manager, contact and at least 1 player are required.';return false}return true}
+function sv(u,n){const a=document.createElement('a');a.href=u;a.download=n;a.click()}
+$('di').onclick=async()=>{const d=data();if(!ok(d))return;const r=await cap(d);sv(r.jpg,'INFT_Registration.jpg')};
+$('dp').onclick=async()=>{const d=data();if(!ok(d))return;(await cap(d)).pdf.save('INFT_Registration.pdf')};
+$('go').onclick=async()=>{const d=data(),m=$('msg');if(!ok(d))return;$('go').disabled=true;m.textContent='পাঠানো হচ্ছে… অপেক্ষা করুন';
+ try{const{jpg,pdf}=await cap(d),b=await (await fetch(jpg)).blob(),fd=new FormData();fd.set('jpg',b,'f.jpg');fd.set('pdf',pdf.output('blob'),'f.pdf');fd.set('website',$('website').value);
+  fd.set('summary',`🆕 INFT S3 Registration\nTeam: ${d.v[0]}\nManager: ${d.v[2]}\nPhone: ${d.v[4]}\nPlayers: ${d.pl.length}\nFee: ${d.v[10]} | 1st: ${d.v[12]} | 2nd: ${d.v[13]}`);
+  const r=await fetch('/api/register',{method:'POST',body:fd});const j=await r.json().catch(()=>({}));m.textContent=r.ok?'✅ জমা হয়েছে। ধন্যবাদ!':'❌ ব্যর্থ: '+(j.error||r.status)}catch(e){m.textContent='❌ Error: '+e.message}$('go').disabled=false};
+</script></html>

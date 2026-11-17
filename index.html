@@ -1,0 +1,32 @@
+<!DOCTYPE html><html lang="bn"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>INFT সিজন ৩ – ইমামবাড়ী নাইট ফুটবল টুর্নামেন্ট ২০২৬</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@500;600;700&family=Poppins:wght@700;800&display=swap" rel="stylesheet">
+<style>:root{--b:#0e4fa3;--y:#f4d000;--d:#061a3d}*{box-sizing:border-box}body{margin:0;font-family:'Hind Siliguri',Poppins,sans-serif;background:#071022;color:#fff}
+a{color:inherit;text-decoration:none}.hero{min-height:92vh;background:linear-gradient(#061a3dcc,#071022),url(assets/p1.jpg) center/cover;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px 16px}
+.hero img{height:min(46vh,380px)}.hero h1{font:800 clamp(30px,6vw,60px) Poppins;margin:6px 0}.hero p{font-size:19px;color:#dbe6ff;margin:4px}
+.btn{display:inline-block;margin:8px;padding:13px 24px;border-radius:30px;font-weight:700;background:var(--y);color:#111}.btn.o{background:none;border:2px solid #fff;color:#fff}
+section{max-width:1050px;margin:0 auto;padding:44px 16px}h2{font-size:30px;margin:0 0 18px;border-left:6px solid var(--y);padding-left:12px}
+.nb{background:#fff;color:#111;border-radius:16px;padding:20px;line-height:1.7;min-height:90px}
+.pg{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.pz{background:linear-gradient(160deg,#123d86,#0a1d44);border:1px solid #2c4f95;border-radius:18px;padding:22px;text-align:center}
+.pz:first-child{background:linear-gradient(160deg,#f4d000,#d98d00);color:#111;transform:scale(1.04)}.pz b{display:block;font-size:42px}.pz h3{margin:6px 0}
+.gl{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}.gl img{width:100%;height:210px;object-fit:cover;border-radius:14px}
+footer{text-align:center;padding:26px;color:#9db0d8;font-size:13px}#tb{position:sticky;top:0;background:#fff;color:#111;padding:6px;display:none;z-index:9;gap:5px;flex-wrap:wrap}
+#tb button,#tb input{padding:5px 9px;border:1px solid #ccc;border-radius:6px;background:#f5f5f5;font:inherit}.ad [contenteditable]{outline:2px dashed var(--y)}</style>
+<div id="tb"><button onclick="x('bold')"><b>B</b></button><button onclick="x('italic')"><i>I</i></button><button onclick="x('underline')"><u>U</u></button>
+<button onclick="x('fontSize',prompt('সাইজ ১-৭',5))">Aa</button><input type="color" onchange="x('foreColor',this.value)"><button onclick="x('justifyLeft')">⇤</button><button onclick="x('justifyCenter')">≡</button>
+<button onclick="x('insertUnorderedList')">• তালিকা</button><button onclick="x('createLink',prompt('লিংক'))">🔗</button><button onclick="sv()" style="background:#0e4fa3;color:#fff">💾 সেভ</button></div>
+<div class="hero"><img src="assets/logo_dark.png"><h1>INFT সিজন ৩</h1><p>ইমামবাড়ী নাইট ফুটবল টুর্নামেন্ট ২০২৬</p><p>রাত। দর্শক। গৌরব।</p>
+<div><a class="btn" href="register.html">টিম রেজিস্ট্রেশন</a><a class="btn o" href="card.html">প্লেয়ার কার্ড বানান</a><a class="btn o" href="lineup.html">📋 লাইনআপ ও লিস্ট</a></div></div>
+<section><h2>⚽ খেলার ফরম্যাট</h2><div class="pg"><div class="pz"><b>১১</b><h3>স্কোয়াড</h3>প্রতি টিমে সর্বোচ্চ ১১ জন প্লেয়ার</div><div class="pz"><b>৮</b><h3>মাঠে খেলবে</h3>একসাথে ৮ জন করে</div><div class="pz"><b>🏟️</b><h3>মিনি মাঠ</h3>মিনি বার ফরম্যাটে খেলা</div></div></section>
+<section><h2>📢 নোটিশ বোর্ড</h2><div class="nb" id="notice" data-e>খুব শীঘ্রই নোটিশ দেওয়া হবে।</div></section>
+<section><h2>🏆 পুরস্কার</h2><div class="pg" id="prizes" data-e>
+<div class="pz"><b>🥇</b><h3>চ্যাম্পিয়ন</h3>২টি ফ্রিজ (ডাবল ফ্রিজ) + ট্রফি</div><div class="pz"><b>🥈</b><h3>রানার-আপ</h3>পুরস্কার ঘোষণা হবে</div>
+<div class="pz"><b>⚽</b><h3>সেরা খেলোয়াড়</h3>ট্রফি + পুরস্কার</div><div class="pz"><b>🧤</b><h3>সেরা গোলকিপার</h3>ট্রফি + পুরস্কার</div></div></section>
+<section><h2>📸 ঝলক</h2><div class="gl"><img src="assets/p1.jpg"><img src="assets/p2.jpg"><img src="assets/p3.jpg"></div></section>
+<footer>© INFT ২০২৬ · <a href="#" onclick="adm();return false">অ্যাডমিন</a></footer>
+<script>
+const K=['notice','prizes'];
+fetch('/api/content').then(r=>r.json()).then(c=>K.forEach(k=>c[k]&&(document.getElementById(k).innerHTML=c[k]))).catch(()=>{});
+function adm(){const p=prompt('অ্যাডমিন পাসওয়ার্ড');if(!p)return;sessionStorage.pw=p;document.body.classList.add('ad');$('tb').style.display='flex';document.querySelectorAll('[data-e]').forEach(e=>e.contentEditable=true)}
+const $=i=>document.getElementById(i);function x(c,v){document.execCommand(c,false,v)}
+async function sv(){const o={};K.forEach(k=>o[k]=$(k).innerHTML);const r=await fetch('/api/content',{method:'PUT',headers:{'x-admin':sessionStorage.pw},body:JSON.stringify(o)});alert(r.ok?'সেভ হয়েছে ✅':'পাসওয়ার্ড ভুল বা KV সেট নেই ❌')}
+</script></html>
