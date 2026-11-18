@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="bn"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>খেলার নিয়ম ও ফি – INFT সিজন ৩</title>
+<link rel="stylesheet" href="assets/inft.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>body{font-family:'Hind Siliguri',Poppins,sans-serif}.w{max-width:820px;margin:0 auto;padding:14px}.c{background:#fff;border-radius:14px;padding:16px;margin-bottom:12px;line-height:1.7}
+h2{margin:0 0 8px;font-size:20px;border-left:6px solid #f4d000;padding-left:10px}.k{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.k div{background:#0e4fa3;color:#fff;border-radius:12px;padding:12px;text-align:center}.k b{display:block;font-size:20px}.k div{font-size:13px;padding:10px 4px}
+.c ol,.c ul{padding-left:20px;margin:0}.c li{margin:6px 0}button.s{width:100%;padding:14px;background:#0e4fa3;color:#fff;border:0;border-radius:10px;font:600 16px 'Hind Siliguri';margin-bottom:8px}a.s{display:block;text-align:center;text-decoration:none}#o{position:fixed;left:-9999px;top:0}</style>
+<div class="w">
+<div class="c"><h2>💰 ফি ও পেমেন্ট</h2><div class="k"><div><b id="k1"></b>এন্ট্রি ফি</div><div style="background:#d98d00"><b id="k2"></b>অগ্রিম (কনফার্ম)</div><div style="background:#1f8a3b"><b id="k3"></b>খেলার দিন বাকি</div></div><ol id="fr" style="margin-top:10px"></ol></div>
+<div class="c"><h2>🏆 পুরস্কার</h2>চ্যাম্পিয়ন দল পাবে <b>ডাবল ফ্রীজ</b> এবং রানার্স-আপ দল পাবে <b>একটি ফ্রীজ</b>।</div>
+<div class="c"><h2>⚽ খেলার নিয়ম</h2><ul id="pr" style="list-style:none;padding:0"></ul></div><div class="c"><h2>📋 সাধারণ নিয়মাবলী</h2><ol id="rl"></ol></div>
+<button class="s" id="dl">⬇ ফর্ম ও নিয়ম ডাউনলোড (PDF)</button><a class="s" style="padding:14px;background:#f4d000;border-radius:10px;font-weight:700;color:#111" href="register.html">✍ টিম রেজিস্ট্রেশন করুন</a><p id="msg" style="text-align:center;font-weight:600"></p></div><div id="o"></div>
+<script src="assets/sheet.js"></script><script>
+$('k1').textContent='৳'+bn(FEE.t);$('k2').textContent='৳'+bn(FEE.a);$('k3').textContent='৳'+bn(FEE.d);$('fr').innerHTML=li(FR);$('pr').innerHTML=prHTML();$('rl').innerHTML=li(RL);
+$('dl').onclick=()=>dlTwo({v:[],pl:[]},$('msg'));
+</script><script src="assets/site.js" data-title="নিয়ম ও ফি" data-sub="খেলার নিয়মাবলী, ফি ও পুরস্কার"></script></html>

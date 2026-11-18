@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="bn"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>প্লেয়ার কার্ড – INFT</title>
+<link rel="stylesheet" href="assets/fonts.css">
+<style>*{box-sizing:border-box}body{margin:0;background:#071022;color:#fff;font-family:'Hind Siliguri',Poppins,sans-serif}
+.w{max-width:1100px;margin:0 auto;padding:14px;display:grid;grid-template-columns:330px 1fr;gap:16px;align-items:start}
+.pv{position:sticky;top:70px}.c{background:#101c3a;border-radius:14px;padding:14px}label{font-size:12px;color:#9db0d8;display:block;margin:8px 0 3px}
+input,select{width:100%;padding:8px;border-radius:8px;border:1px solid #2c4f95;background:#0a1530;color:#fff;font:inherit}input[type=range]{padding:0}.s{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+button{width:100%;margin-top:8px;padding:11px;border:0;border-radius:10px;font:700 14px 'Hind Siliguri';background:#f4d000;color:#111;cursor:pointer}button.b{background:#0e4fa3;color:#fff}button.g2{background:#1d3568;color:#fff}
+canvas{width:100%;max-width:480px;border-radius:14px;display:block;margin:auto;touch-action:none;cursor:grab;background:#071022}canvas:active{cursor:grabbing}
+#m{font-size:13px;margin:6px 0 0;text-align:center;min-height:18px;color:#dbe6ff}.nt{font-size:12px;color:#9db0d8;margin:4px 0}a{color:#f4d000}
+@media(max-width:800px){.w{grid-template-columns:1fr;padding:8px}.pv{order:-1;top:56px;z-index:20;background:#071022;padding:4px 0}canvas{width:auto;height:42vh;max-width:100%}}</style>
+<div class="w"><div class="c"><a href="index.html">← হোম</a><h3 style="margin:6px 0">⚽ প্লেয়ার কার্ড মেকার</h3>
+<p class="nt">💡 কার্ডের ছবি আঙুল/মাউস দিয়ে টেনে সরান; মাউস হুইল দিয়ে জুম করুন।</p>
+<label>প্লেয়ারের ছবি</label><input type="file" id="ph" accept="image/*">
+<label><input type="checkbox" id="bg" checked style="width:auto"> অটো ব্যাকগ্রাউন্ড রিমুভ</label><label>ছবি জুম</label><input type="range" id="z" min="50" max="250" value="100"><label>ছবি ডানে-বামে</label><input type="range" id="ox" min="-400" max="400" value="0"><label>ছবি উপর-নিচ</label><input type="range" id="oy" min="-400" max="400" value="0">
+<button class="g2" id="fit" type="button">🎯 অটো ফিট (পজিশন রিসেট)</button>
+<label>নাম</label><input id="nm" value="PLAYER NAME"><label>টিম</label><input id="tm" value="TEAM NAME">
+<div class="s"><div><label>রেটিং</label><input id="rt" type="number" value="90"></div><div><label>পজিশন</label><input id="ps" value="ST"></div><div><label>জার্সি</label><input id="jn" value="10"></div></div>
+<div class="s" id="st"></div><label>কার্ড টাইপ</label><select id="tp"><option value="gold">Gold Legend</option><option value="blue">Blue Special</option><option value="black">Black Elite</option><option value="bw">Simple (সাদা-কালো)</option></select>
+<button onclick="dl()">⬇ ডাউনলোড PNG</button><button class="b" onclick="sh()">📤 শেয়ার</button><button class="b" onclick="sub()">✅ আয়োজকদের কাছে জমা দিন</button></div>
+<div class="pv"><canvas id="cv" width="1080" height="1500"></canvas><p id="m"></p></div></div>
+<script>
+const $=i=>document.getElementById(i),cv=$('cv'),g=cv.getContext('2d'),S=['PAC','SHO','PAS','DRI','DEF','PHY'],W=1080,H=1500;
+$('st').innerHTML=S.map((s,i)=>`<div><label>${s}</label><input type="number" id="s${i}" value="${80+i}"></div>`).join('');
+const TP={gold:['#fff1a8','#e0a916','#6b4200','#3a2400'],blue:['#9fd4ff','#2a7de1','#0a2a6b','#04153a'],black:['#7a7a7a','#2b2b2b','#0b0b0b','#000'],bw:['#fff','#ddd','#999','#000']};
+const LG={dark:new Image(),bw:new Image()};LG.dark.src='assets/logo_dark.png';LG.bw.src='assets/logo_bw.png';
+let base=null,cut=null,tex=null;
+// ---- brand: stadium banner as a faded texture behind the player ----
+const BN=new Image();BN.onload=()=>{const c=document.createElement('canvas');c.width=1000;c.height=720;const x=c.getContext('2d'),s=Math.max(1000/BN.width,720/BN.height),w=BN.width*s,h=BN.height*s;
+ x.drawImage(BN,500-w/2,360-h/2,w,h);x.globalCompositeOperation='destination-in';const f=x.createLinearGradient(0,0,0,720);f.addColorStop(0,'#000');f.addColorStop(.6,'#000a');f.addColorStop(1,'#0000');x.fillStyle=f;x.fillRect(0,0,1000,720);tex=c;d()};BN.src='assets/banner.jpg';
+// ---- image helpers ----
+function shrink(src,max){const k=Math.min(1,max/Math.max(src.width,src.height)),c=document.createElement('canvas');c.width=Math.round(src.width*k);c.height=Math.round(src.height*k);c.getContext('2d').drawImage(src,0,0,c.width,c.height);return c}
+async function toBitmap(f){try{return await createImageBitmap(f,{imageOrientation:'from-image'})}catch(e){return await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=no;i.src=URL.createObjectURL(f)})}}
+// crop to the person: ignore stray specks so the position is always centred & bottom-anchored
+function cropAlpha(src){const w=src.width,h=src.height,a=src.getContext('2d').getImageData(0,0,w,h).data,col=new Uint32Array(w),row=new Uint32Array(h);
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++)if(a[(y*w+x)*4+3]>96){col[x]++;row[y]++}
+ const mc=Math.max(4,h*.008|0),mr=Math.max(4,w*.008|0);let x0=0,x1=w-1,y0=0,y1=h-1;while(x0<w&&col[x0]<mc)x0++;while(x1>x0&&col[x1]<mc)x1--;while(y0<h&&row[y0]<mr)y0++;while(y1>y0&&row[y1]<mr)y1--;
+ if(x1<=x0||y1<=y0)return null;const o=document.createElement('canvas');o.width=x1-x0+1;o.height=y1-y0+1;o.getContext('2d').drawImage(src,x0,y0,o.width,o.height,0,0,o.width,o.height);return o}
+// ---- background removal: npm @imgly/background-removal (+ model files from npm, self-hosted by build.mjs) ----
+// Upload -> removal starts by itself. Model ("small" = fastest) is cached by the browser after the first load.
+const PP=location.origin+'/assets/bg-data/',CDNP='https://cdn.jsdelivr.net/npm/@imgly/background-removal-data@1.4.5/dist/';
+const LIB={};const lib=k=>LIB[k]||(LIB[k]=(k=='local'?import('./assets/bg.js'):import('https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.4.5/+esm')).catch(e=>{delete LIB[k];throw e}));
+const prog=(k,c,t)=>{if(t)$('m').textContent=(/fetch/.test(k)?'⏳ মডেল ডাউনলোড হচ্ছে (শুধু প্রথমবার) ':'⏳ ব্যাকগ্রাউন্ড রিমুভ হচ্ছে ')+Math.round(c/t*100)+'%'};
+const opt=pp=>({publicPath:pp,model:'small',progress:prog,output:{format:'image/png'}});
+const attempts=()=>[['local',b=>lib('local').then(l=>l.removeBackground(b,opt(PP)))],['cdn',b=>lib('cdn').then(l=>l.removeBackground(b,opt(CDNP)))]];
+let job=0,mini=null;
+async function doCut(){if(!mini)return;const my=++job,m=$('m'),t0=performance.now();m.textContent='⏳ ব্যাকগ্রাউন্ড রিমুভ হচ্ছে…';
+ const blob=await new Promise(r=>mini.toBlob(r,'image/jpeg',.92));
+ for(const[n,run]of attempts()){try{const out=await run(blob);if(my!=job)return;const bm=await createImageBitmap(out),c=cropAlpha(shrink(bm,1400));if(!c)throw new Error('empty');
+   cut=c;m.textContent='✅ ব্যাকগ্রাউন্ড রিমুভ হয়েছে ('+((performance.now()-t0)/1000).toFixed(1)+' সেকেন্ড)';console.log('bg-remove',n,performance.now()-t0,'ms');d();return}catch(x){console.warn('bg-remove failed:',n,x)}}
+ if(my==job)m.textContent='⚠ রিমুভ হয়নি (ইন্টারনেট চেক করুন), আসল ছবি ব্যবহার হচ্ছে'}
+$('ph').onchange=async e=>{const f=e.target.files[0];if(!f)return;cut=null;job++;const bm=await toBitmap(f);base=shrink(bm,1600);mini=shrink(bm,1024);$('fit').click();$('m').textContent='';
+ if($('bg').checked)doCut()};
+$('bg').onchange=()=>{if($('bg').checked){if(mini&&!cut)doCut()}else{job++;cut=null;$('m').textContent='';d()}};
+$('fit').onclick=()=>{$('z').value=100;$('ox').value=0;$('oy').value=0;d()};
+document.querySelectorAll('input,select').forEach(e=>e.oninput=d);
+// drag to move, wheel to zoom
+let dr=null;cv.addEventListener('pointerdown',e=>{dr={x:e.clientX,y:e.clientY,ox:+$('ox').value,oy:+$('oy').value};cv.setPointerCapture(e.pointerId)});
+cv.addEventListener('pointermove',e=>{if(!dr)return;const k=W/cv.getBoundingClientRect().width;$('ox').value=dr.ox+(e.clientX-dr.x)*k;$('oy').value=dr.oy+(e.clientY-dr.y)*k;d()});
+['pointerup','pointercancel'].forEach(t=>cv.addEventListener(t,()=>dr=null));
+cv.addEventListener('wheel',e=>{e.preventDefault();$('z').value=Math.min(250,Math.max(50,+$('z').value-e.deltaY*.1));d()},{passive:false});
+// ---- drawing ----
+function T(t,x,y,s,w,c,a,mx){g.font=`${w} ${s}px Poppins,'Hind Siliguri',sans-serif`;if(mx)while(s>20&&g.measureText(t).width>mx){s-=2;g.font=`${w} ${s}px Poppins,'Hind Siliguri',sans-serif`}g.fillStyle=c;g.textAlign=a||'center';g.fillText(t,x,y)}
+function person(){const z=$('z').value/100,ox=+$('ox').value,oy=+$('oy').value;
+ if(cut){const k=Math.min(820/cut.width,880/cut.height)*z,w=cut.width*k,h=cut.height*k;g.save();g.shadowColor='#000a';g.shadowBlur=36;g.shadowOffsetY=14;g.drawImage(cut,580-w/2+ox,1050-h+oy,w,h);g.restore();return}
+ if(base){const s=Math.max(1000/base.width,900/base.height)*z,w=base.width*s,h=base.height*s;g.save();g.beginPath();g.rect(40,150,1000,900);g.clip();
+  g.drawImage(base,540-w/2+ox,150-Math.max(0,h-900)*.2+oy,w,h);g.restore();return}
+ T('📷 ছবি আপলোড করুন',540,600,48,600,$('tp').value=='bw'?'#000':'#fff')}
+function shape(){g.beginPath();g.moveTo(120,40);g.lineTo(960,40);g.lineTo(1040,140);g.lineTo(1040,1360);g.lineTo(900,1460);g.lineTo(180,1460);g.lineTo(40,1360);g.lineTo(40,140);g.closePath()}
+function d(){const ty=$('tp').value,c=TP[ty],bw=ty=='bw',tc=bw?'#000':'#fff';g.clearRect(0,0,W,H);g.fillStyle='#071022';g.fillRect(0,0,W,H);
+ g.save();shape();g.clip();
+ const gr=g.createLinearGradient(0,0,W,H);gr.addColorStop(0,c[0]);gr.addColorStop(.35,c[1]);gr.addColorStop(.75,c[2]);gr.addColorStop(1,c[3]);g.fillStyle=gr;g.fillRect(0,0,W,H);
+ g.globalAlpha=.18;g.fillStyle='#fff';for(let i=0;i<6;i++){g.beginPath();g.moveTo(i*220-200,0);g.lineTo(i*220-60,0);g.lineTo(i*220+500,H);g.lineTo(i*220+360,H);g.fill()}g.globalAlpha=1;
+ if(tex&&!bw){g.globalAlpha=.38;g.drawImage(tex,40,40);g.globalAlpha=1}
+ person();
+ T($('rt').value,170,250,150,800,tc);T($('ps').value,170,320,56,800,tc);T('#'+$('jn').value,170,385,44,600,tc);
+ const L=bw?LG.bw:LG.dark;if(L.complete&&L.naturalWidth)g.drawImage(L,820,70,190,230);
+ g.fillStyle=bw?'#000':'#00000066';g.fillRect(60,1040,960,110);T($('nm').value.toUpperCase(),540,1120,76,800,'#fff','center',900);
+ T($('tm').value.toUpperCase(),540,1190,40,600,tc,'center',900);
+ S.forEach((s,i)=>{const x=150+(i%3)*300,y=1280+Math.floor(i/3)*85;T($('s'+i).value,x,y,60,800,tc,'right');T(s,x+14,y-6,32,600,tc,'left')});
+ T('INFT SEASON 3 · 2026',540,1430,30,600,tc);g.restore();shape();g.lineWidth=8;g.strokeStyle=bw?'#000':c[0];g.stroke()}
+function dl(){cv.toBlob(b=>saveBlob(b,'INFT_player_card.png'),'image/png')}
+async function sh(){cv.toBlob(async b=>{const f=new File([b],'INFT_card.png',{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f],title:'INFT Player Card'});else dl()})}
+function sub(){cv.toBlob(async b=>{const fd=new FormData();fd.set('jpg',b,'card.png');fd.set('summary',`🃏 Player Card\n${$('nm').value} | ${$('tm').value} | ${$('ps').value} ${$('rt').value}`);
+ const r=await fetch('/api/register',{method:'POST',body:fd});$('m').textContent=r.ok?'✅ জমা হয়েছে':'❌ ব্যর্থ'})}
+// warm up the model in the background so removal is instant after upload (skipped only on data-saver); also starts the moment the file picker opens
+let warmed=0;const warm=()=>{if(warmed)return;warmed=1;lib('local').then(l=>l.preload&&l.preload({publicPath:PP,model:'small'})).catch(()=>{warmed=0})};
+$('ph').addEventListener('click',warm);(function(){const n=navigator.connection;if(n&&n.saveData)return;setTimeout(warm,800)})();
+LG.dark.onload=LG.bw.onload=d;d();
+Promise.all(['800 40px Poppins','600 40px Poppins','700 40px "Hind Siliguri"','600 40px "Hind Siliguri"'].map(f=>document.fonts.load(f))).then(d).catch(()=>{});
+</script><script src="assets/site.js" data-title="প্লেয়ার কার্ড মেকার" data-sub="নিজের কার্ড বানান ও ডাউনলোড করুন"></script></html>
