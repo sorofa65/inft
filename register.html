@@ -15,7 +15,7 @@ button.s{width:100%;padding:14px;background:#0e4fa3;color:#fff;border:0;border-r
 <div class="c"><b>প্লেয়ার লিস্ট</b> <small>– মূল দল ৮ জন (গোলরক্ষকসহ) + সাব ৪ জন = মোট ১২ জন</small><div id="pl"></div></div>
 <div class="c"><b>📎 পেমেন্টের স্ক্রিনশট (ছবি)</b><input type="file" id="shot" accept="image/*"><img class="pv" id="pvi">
 <label>🎥 ভিডিও (ঐচ্ছিক, সর্বোচ্চ ৪৫ MB)</label><input type="file" id="vid" accept="video/*"><progress id="pg" max="100" value="0"></progress></div>
-<button class="s" style="background:#444" id="dd">⬇ ফর্ম + নিয়ম ডাউনলোড (PDF)</button><button class="s" id="go">✅ জমা দিন (Submit)</button><p id="msg" style="text-align:center;font-weight:600"></p></div><div id="o"></div>
+<div class="c"><b>⬇ ডাউনলোড (A4 PDF)</b><button class="s" style="background:#1f8a3b" id="dblank">📄 ফাঁকা রেজিস্ট্রেশন ফর্ম ডাউনলোড (অফলাইন – প্রিন্ট করে পূরণ)</button><button class="s" style="background:#444" id="dd">✍ পূরণ করা ফর্ম ডাউনলোড (A4)</button><button class="s" style="background:#d98d00" id="drl">📜 সব নিয়ম ডাউনলোড (A4)</button></div><button class="s" id="go">✅ জমা দিন (Submit)</button><p id="msg" style="text-align:center;font-weight:600"></p></div><div id="o"></div>
 <script src="assets/sheet.js"></script><script>
 $('k1').textContent=bn(FEE.t);$('k2').textContent=bn(FEE.a);$('k3').textContent=bn(FEE.d);$('fr').innerHTML=li(FR);
 const T=['text','text','text','text','tel','tel','text','text','text','text','text','text'];
@@ -25,7 +25,9 @@ $('fl').querySelector('[data-f="11"]').value=new Date().toLocaleDateString('en-G
 $('shot').onchange=e=>{const f=e.target.files[0],p=$('pvi');if(f){p.src=URL.createObjectURL(f);p.style.display='block'}else p.style.display='none'};
 function data(){const v=[...document.querySelectorAll('[data-f]')].map(i=>i.value.trim());const pl=[...document.querySelectorAll('.p')].map(r=>[...r.querySelectorAll('input')].map(i=>i.value.trim()));return{v,pl}}
 function ok(d){const m=$('msg');if(!d.v[0]||!d.v[2]||!d.v[4]){m.textContent='দলের নাম, ম্যানেজারের নাম ও মোবাইল নম্বর দিন।';return false}if(d.pl.slice(0,8).filter(r=>r[0]).length<8){m.textContent='মূল দলের ৮ জন প্লেয়ারের নাম দিন।';return false}return true}
-$('dd').onclick=()=>{const d=data();if(ok(d))dlTwo(d,$('msg'))};
+$('dblank').onclick=()=>dlOne('f',{v:[],pl:[]},$('msg'));
+$('dd').onclick=()=>{const d=data();if(ok(d))dlOne('f',d,$('msg'))};
+$('drl').onclick=()=>dlOne('r',data(),$('msg'));
 $('go').onclick=async()=>{const d=data(),m=$('msg'),sh=$('shot').files[0],vd=$('vid').files[0];if(!ok(d))return;
  if(vd&&vd.size>45*1024*1024){m.textContent='ভিডিও ৪৫ MB এর বেশি। ছোট ভিডিও দিন।';return}
  $('go').disabled=true;m.textContent='⏳ পাঠানো হচ্ছে… অপেক্ষা করুন';
