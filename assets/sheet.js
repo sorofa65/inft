@@ -32,8 +32,11 @@ function sheetForm(d){return `<div class="a4"><div class="fb">${HD}<div class="t
 <table><colgroup><col style="width:15mm"><col><col style="width:18mm"><col style="width:28mm"><col style="width:30mm"></colgroup><tr><th>ক্রম<br>Sl</th><th>প্লেয়ারের নাম<br>Player Name</th><th>জার্সি<br>No</th><th>পজিশন<br>Position</th><th>স্বাক্ষর<br>Sign</th></tr>${Array.from({length:12},(_,i)=>{const p=d.pl[i]||[];return`<tr><td>${i<8?bn(i+1):'সাব '+bn(i-7)}</td><td class="v">${E(p[0])}</td><td class="v">${E(p[1])}</td><td class="v">${E(p[2])}</td><td></td></tr>`}).join('')}</table>
 <p style="font-size:10.5px;margin:2px 0"><b>মূল দল ৮ জন (গোলরক্ষকসহ) + সাব ৪ জন = মোট ১২ জন · Main 8 + Sub 4 = 12</b></p>
 <div class="bx"><b>ফি ও পেমেন্টের নিয়ম:</b><ol class="rl" style="font-size:10.5px;margin:2px 0">${li(FR)}</ol></div>${SG('ম্যানেজারের স্বাক্ষর / Manager','ক্যাপ্টেনের স্বাক্ষর / Captain')}</div></div>`}
-function sheetRules(d){return `<div class="a4"><div class="fb">${HD}<div class="tt">খেলার নিয়মাবলী / MATCH RULES</div><ul class="rl" style="list-style:none;padding:0">${prHTML()}</ul><ol class="rl">${li(RL)}</ol>
-<div class="tt" style="margin:8px 0">অঙ্গীকার পত্র / DECLARATION</div><p style="font-size:12px;line-height:1.9">আমি <span class="v">${E(d.v[3])||'………………………'}</span>, <span class="v">${E(d.v[0])||'………………………'}</span> ক্লাবের ক্যাপ্টেন, টিম ম্যানেজার <span class="v">${E(d.v[2])||'………………………'}</span>। উপরের সকল নিয়ম সম্পর্কে অবগত আছি এবং আমি ও আমার টিমের সকল প্লেয়ার নিয়মগুলো সর্বদা মেনে চলবো।</p>${SG('ক্যাপ্টেন / Captain','ম্যানেজার / Manager')}</div></div>`}
+function sheetRules(d){return `<div class="a4"><div class="fb">${HD}<div class="tt">খেলার নিয়মাবলী / MATCH RULES</div>
+<div class="bx"><b>ফি ও পেমেন্টের নিয়ম:</b><ol class="rl" style="font-size:11.5px;margin:2px 0;line-height:16px">${li(FR)}</ol></div>
+<div class="bx" style="text-align:center;font-size:12px"><b>পুরস্কার / Prize:</b> চ্যাম্পিয়ন দল — <b>বড় ফ্রিজ</b> &nbsp;|&nbsp; রানার্স-আপ দল — <b>ছোট ফ্রিজ</b></div>
+<ul class="rl" style="list-style:none;padding:0;font-size:12px;line-height:17px">${prHTML()}</ul><ol class="rl" style="font-size:12px;line-height:17px">${li(RL)}</ol>
+<div class="tt" style="margin:6px 0">অঙ্গীকার পত্র / DECLARATION</div><p style="font-size:12px;line-height:1.9;margin:2px 0">আমি <span class="v">${E(d.v[3])||'………………………'}</span>, <span class="v">${E(d.v[0])||'………………………'}</span> ক্লাবের ক্যাপ্টেন, টিম ম্যানেজার <span class="v">${E(d.v[2])||'………………………'}</span>। উপরের সকল নিয়ম সম্পর্কে অবগত আছি এবং আমি ও আমার টিমের সকল প্লেয়ার নিয়মগুলো সর্বদা মেনে চলবো।</p>${SG('ক্যাপ্টেন / Captain','ম্যানেজার / Manager')}</div></div>`}
 // Make sure every Bangla/Latin font is really loaded BEFORE the sheet is captured (otherwise text overlaps / jumbles)
 async function fontsReady(){const t='অআইউএওকখগঘঙচছজঝঞটঠডঢণতথদধনপফবভমযরলশষসহড়ঢ়য়ংঃঁ ক্ষ জ্ঞ ম্যা ১২৩৪৫৬৭৮৯০ ৳ Abc123';
  try{await Promise.all(['500 13px "Hind Siliguri"','600 13px "Hind Siliguri"','700 13px "Hind Siliguri"','700 13px Poppins','800 13px Poppins'].map(f=>document.fonts.load(f,t)))}catch(e){}
@@ -48,3 +51,9 @@ const MOB=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)||(navigator.maxT
 async function dlTwo(d,m){m.textContent='⏳ ফাইল তৈরি হচ্ছে…';const r=await build(d);
  if(MOB){await saveBlob(r.both.output('blob'),'INFT_Registration_Form_and_Rules.pdf');m.textContent='✅ ১টি PDF ডাউনলোড হয়েছে (ফর্ম + নিয়মাবলী)';return}
  await saveBlob(r.f.output('blob'),'INFT_Team_Registration_Form.pdf');setTimeout(async()=>{await saveBlob(r.r.output('blob'),'INFT_Match_Rules.pdf');m.textContent='✅ ২টি ফাইল ডাউনলোড হয়েছে (ফর্ম + নিয়মাবলী)'},900)}
+// Single A4 PDF download: kind 'f' = registration form (blank or filled), 'r' = all rules (fee + prize + rules + declaration)
+async function dlOne(kind,d,m){m.textContent='⏳ A4 ফাইল তৈরি হচ্ছে…';
+ try{const blank=!(d.v||[]).some(x=>x)&&!(d.pl||[]).some(r=>r.some(x=>x)),cv=await cap(kind==='f'?sheetForm(d):sheetRules(d)),p=new window.jspdf.jsPDF('p','mm','a4');put(p,cv);
+  const name=kind==='f'?(blank?'INFT_Blank_Registration_Form_A4.pdf':'INFT_Team_Registration_Form_A4.pdf'):'INFT_All_Rules_A4.pdf';
+  await saveBlob(p.output('blob'),name);m.textContent=kind==='f'?(blank?'✅ ফাঁকা ফর্ম (A4 PDF) ডাউনলোড হয়েছে — প্রিন্ট করে হাতে পূরণ করুন':'✅ পূরণ করা ফর্ম (A4 PDF) ডাউনলোড হয়েছে'):'✅ সব নিয়ম (A4 PDF) ডাউনলোড হয়েছে'}
+ catch(e){m.textContent='❌ ডাউনলোড ব্যর্থ: '+e.message}}
